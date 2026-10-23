@@ -137,7 +137,7 @@ export const PwaApp: React.FC = () => {
                 <span className="text-[10px] uppercase font-mono tracking-widest text-[#C5A059] font-bold">
                   Curadoria Técnica Caves Santa Cruz
                 </span>
-                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#F5F2EB] leading-tight">
+                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#F5F2EB] leading-tight tracking-tight">
                   Vinhos que levam mais longe: do Velho ao Novo Mundo.
                 </h1>
                 <p className="text-xs text-[#A89F91] leading-relaxed">

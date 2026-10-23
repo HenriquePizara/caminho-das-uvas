@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3033;
+const PORT = Number(process.env.PORT) || 3000;
 const DIST_DIR = path.resolve(__dirname, "dist");
 
 app.use(cors());

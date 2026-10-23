@@ -4,19 +4,24 @@
 
 import React, { useState } from "react";
 import { B2BSession, lockB2BSession } from "../lib/b2bAuth";
+import { WINE_CATALOG, WineProduct } from "../data/catalog";
+import { formatBRL } from "../lib/money";
 
 interface SommelierTabProps {
   session: B2BSession | null;
   onOpenGatekeeper: () => void;
+  onAddBox?: (wine: WineProduct) => void;
 }
 
 export const SommelierTab: React.FC<SommelierTabProps> = ({
   session,
   onOpenGatekeeper,
+  onAddBox,
 }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const isUnlocked = session !== null;
+  const kitProduct = WINE_CATALOG.find((w) => w.id === "kit-homologacao-sommelier-6");
 
   const FAQS = [
     {
@@ -89,6 +94,84 @@ export const SommelierTab: React.FC<SommelierTabProps> = ({
           )}
         </div>
       </div>
+
+      {/* Card do Kit de Homologação do Sommelier (Degustação B2B) */}
+      {kitProduct && (
+        <div className="p-6 rounded-3xl bg-gradient-to-br from-[#171413] via-[#1E1917] to-[#0D0B0A] border border-[#C5A059]/50 shadow-2xl space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-mono tracking-widest text-[#C5A059] font-bold bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded-md">
+              Kit de Validação de Salão
+            </span>
+            <span className="text-xs font-serif font-black text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+              Exclusivo 1º Pedido PJ
+            </span>
+          </div>
+
+          <div>
+            <h3 className="font-serif font-bold text-lg text-[#F5F2EB]">
+              Caixa de Prova do Sommelier (6 Garrafas Sortidas)
+            </h3>
+            <p className="text-xs text-[#A89F91] mt-1 leading-relaxed">
+              Permite que sua equipe e sommelier degustem os principais perfis de carta antes da compra de caixas monorótulo fechadas.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-[#0D0B0A] border border-[#2D2622] space-y-1.5 text-xs">
+            <div className="flex items-center justify-between text-[#F5F2EB]">
+              <span>1x Monólogo Avesso DOC (Vinho Verde Nobre)</span>
+              <span className="text-[10px] text-[#A89F91] font-mono">PT</span>
+            </div>
+            <div className="flex items-center justify-between text-[#F5F2EB]">
+              <span>1x Morgado do Quintão Curtimenta (Ânfora)</span>
+              <span className="text-[10px] text-[#A89F91] font-mono">PT</span>
+            </div>
+            <div className="flex items-center justify-between text-[#F5F2EB]">
+              <span>2x Tintos de Alto Giro (Pousio Selection & Adega Grande)</span>
+              <span className="text-[10px] text-[#A89F91] font-mono">PT</span>
+            </div>
+            <div className="flex items-center justify-between text-[#F5F2EB]">
+              <span>1x Pousio Reserva Tinto 2020 (92 pts Decanter)</span>
+              <span className="text-[10px] text-[#A89F91] font-mono">PT</span>
+            </div>
+            <div className="flex items-center justify-between text-[#F5F2EB]">
+              <span>1x Azeite Extra Virgem Casa Cruz 0,2% (500ml)</span>
+              <span className="text-[10px] text-[#A89F91] font-mono">PT</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <div>
+              <span className="text-[10px] text-[#A89F91] block">Preço Promocional B2B:</span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-serif font-black text-2xl text-[#C5A059]">
+                  {formatBRL(kitProduct.b2bUnitCents, true)}
+                </span>
+                <span className="text-[10px] text-stone-500 line-through">
+                  {formatBRL(kitProduct.d2cSuggestedUnitCents, true)}
+                </span>
+              </div>
+            </div>
+
+            {isUnlocked && onAddBox ? (
+              <button
+                type="button"
+                onClick={() => onAddBox(kitProduct)}
+                className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#C5A059] to-[#D4AF37] text-[#0D0B0A] font-bold text-xs shadow-lg hover:brightness-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <span>+ Adicionar Kit</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenGatekeeper}
+                className="py-2.5 px-4 rounded-xl bg-[#0D0B0A] border border-[#C5A059]/40 text-[#C5A059] font-bold text-xs hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
+              >
+                Validar CNPJ p/ Pedir
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Card de Contato Direto com Sommelier */}
       <div className="p-6 rounded-3xl bg-gradient-to-br from-[#171413] via-[#1A1615] to-[#0D0B0A] border border-[#C5A059]/40 shadow-xl space-y-4">

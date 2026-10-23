@@ -41,6 +41,7 @@ export const PwaApp: React.FC = () => {
     { id: "terroirs_icones", label: "👑 Grandes Terroirs & Ícones" },
     { id: "alto_giro", label: "⚡ Alto Giro & Margem" },
     { id: "biologicos_inovacao", label: "🌱 Biológicos & Ânfora" },
+    { id: "kit_degustacao", label: "📦 Kit Degustação B2B (6 gfs)" },
     { id: "azeites_especiais", label: "🫒 Azeites Nobres" },
   ];
 
@@ -209,6 +210,7 @@ export const PwaApp: React.FC = () => {
           <SommelierTab
             session={session}
             onOpenGatekeeper={() => setIsGatekeeperOpen(true)}
+            onAddBox={handleAddBox}
           />
         )}
       </main>
@@ -217,6 +219,8 @@ export const PwaApp: React.FC = () => {
       <FloatingQuoteBar
         items={quoteItems}
         onClearQuote={handleClearQuote}
+        cnpj={session?.formattedCnpj}
+        companyName={session?.companyName}
       />
 
       {/* ── 5. BOTTOM NAVIGATION BAR FIXA (4 ABAS) ── */}

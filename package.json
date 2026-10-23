@@ -1,0 +1,37 @@
+{
+  "name": "caminho-das-uvas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Caminho das Uvas — Distribuidora & Alta Adega B2B/D2C",
+  "scripts": {
+    "dev": "vite --host --port 3033",
+    "build": "tsc && vite build && esbuild src/server.ts --bundle --platform=node --format=esm --packages=external --outfile=server.mjs",
+    "preview": "vite preview --port 3033",
+    "start": "node server.mjs",
+    "governanca": "node /home/henrique/wbmonster-hub/scripts/governance-dispatcher.mjs governanca",
+    "sec": "node /home/henrique/wbmonster-hub/scripts/governance-dispatcher.mjs sec",
+    "design:gate": "node /home/henrique/wbmonster-hub/scripts/governance-dispatcher.mjs design:gate",
+    "qa:bulletproof": "node /home/henrique/wbmonster-hub/scripts/governance-dispatcher.mjs qa:bulletproof"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0"
+  }
+}

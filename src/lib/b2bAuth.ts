@@ -78,6 +78,59 @@ export function unlockB2BSession(
   }
 }
 
+export async function unlockB2BSessionAsync(
+  cnpjInput: string,
+  companyName?: string,
+  role: B2BSession["role"] = "restaurante"
+): Promise<UnlockResult> {
+  const cleanCnpj = cnpjInput.replace(/\D/g, "");
+
+  if (!validateCNPJ(cleanCnpj)) {
+    return {
+      success: false,
+      error: "CNPJ inválido. Verifique os dígitos digitados.",
+    };
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+    const res = await fetch("/api/b2b/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cnpj: cleanCnpj, companyName, role }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    const data = await res.json();
+
+    if (!res.ok || !data.authorized) {
+      return {
+        success: false,
+        error: data.error || "CNPJ não autorizado para a tabela B2B de restaurantes.",
+      };
+    }
+
+    const session: B2BSession = {
+      cnpj: cleanCnpj,
+      formattedCnpj: formatCNPJ(cleanCnpj),
+      companyName: data.tradeName || data.corporateName || companyName?.trim() || "Restaurante Parceiro",
+      role,
+      unlockedAt: new Date().toISOString(),
+      token: data.token || `b2b_${cleanCnpj}_${Date.now()}`,
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    dispatchAuthChange(session);
+    return { success: true, session };
+  } catch {
+    // Fallback gracioso offline: se a API estiver inacessível, libera validação local
+    return unlockB2BSession(cleanCnpj, companyName, role);
+  }
+}
+
 export function lockB2BSession(): void {
   if (typeof window === "undefined") return;
   try {

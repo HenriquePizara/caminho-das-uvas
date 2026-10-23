@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from "react";
 import { formatCNPJ, validateCNPJ } from "../lib/formatters";
-import { unlockB2BSession, getB2BSession, B2BSession } from "../lib/b2bAuth";
+import { unlockB2BSessionAsync, getB2BSession, B2BSession } from "../lib/b2bAuth";
 
 interface B2BGatekeeperModalProps {
   isOpen: boolean;
@@ -22,11 +22,13 @@ export const B2BGatekeeperModal: React.FC<B2BGatekeeperModalProps> = ({
   const [role, setRole] = useState<B2BSession["role"]>("restaurante");
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setError(null);
       setIsSuccess(false);
+      setIsLoading(false);
       const current = getB2BSession();
       if (current) {
         setCnpj(current.formattedCnpj);
@@ -45,7 +47,7 @@ export const B2BGatekeeperModal: React.FC<B2BGatekeeperModalProps> = ({
     if (error) setError(null);
   };
 
-  const handleUnlock = (e: React.FormEvent) => {
+  const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -61,16 +63,23 @@ export const B2BGatekeeperModal: React.FC<B2BGatekeeperModalProps> = ({
       return;
     }
 
-    const result = unlockB2BSession(cleanCnpj, companyName, role);
+    setIsLoading(true);
+    try {
+      const result = await unlockB2BSessionAsync(cleanCnpj, companyName, role);
 
-    if (result.success && result.session) {
-      setIsSuccess(true);
-      setTimeout(() => {
-        onSuccess?.(result.session!);
-        onClose();
-      }, 700);
-    } else {
-      setError(result.error || "Não foi possível validar o CNPJ.");
+      if (result.success && result.session) {
+        setIsSuccess(true);
+        setTimeout(() => {
+          onSuccess?.(result.session!);
+          onClose();
+        }, 700);
+      } else {
+        setError(result.error || "Não foi possível validar o CNPJ.");
+      }
+    } catch {
+      setError("Erro de comunicação ao validar CNPJ.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -214,11 +223,19 @@ export const B2BGatekeeperModal: React.FC<B2BGatekeeperModalProps> = ({
           <div className="pt-2 space-y-2">
             <button
               type="submit"
-              disabled={isSuccess}
-              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#C5A059] via-[#D4AF37] to-[#C5A059] text-[#0D0B0A] font-bold text-sm tracking-wide shadow-lg hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2"
+              disabled={isSuccess || isLoading}
+              className={`w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#C5A059] via-[#D4AF37] to-[#C5A059] text-[#0D0B0A] font-bold text-sm tracking-wide shadow-lg hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 ${
+                isLoading ? "opacity-75 cursor-wait" : "cursor-pointer"
+              }`}
             >
-              <span>{isSuccess ? "DESBLOQUEADO" : "DESBLOQUEAR TABELA PJ"}</span>
-              <span>→</span>
+              {isLoading ? (
+                <span>CONSULTANDO RECEITA & CNAE...</span>
+              ) : (
+                <>
+                  <span>{isSuccess ? "DESBLOQUEADO" : "DESBLOQUEAR TABELA PJ"}</span>
+                  <span>→</span>
+                </>
+              )}
             </button>
 
             <button

@@ -19,7 +19,7 @@ export interface WineProduct {
   woodAgingMonths?: number;
   points?: {
     score: number;
-    critic: "Robert Parker" | "Decanter" | "James Suckling" | "Luca Maroni" | "Berlin GOOA" | "Brazil IOOC";
+    critic: "Robert Parker" | "Decanter" | "James Suckling" | "Luca Maroni" | "Berlin GOOA" | "Brazil IOOC" | "Wine Enthusiast" | string;
     medal?: string;
   };
   
